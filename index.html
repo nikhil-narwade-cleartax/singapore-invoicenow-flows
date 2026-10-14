@@ -1,0 +1,401 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>ClearTax InvoiceNow Flows</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;800&family=IBM+Plex+Mono:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+/* Layout: same presentation stage as the generic explorer. Flow chips on top, network drawing as the hero with ClearTax's platform and Access Point bracketed together, one large step card, a big Next button. One deliberate dark, high-contrast look. */
+:root{
+  --bg:#0B1230; --stage:#111B44; --card:#16225A; --ink:#F4F6FF; --muted:#A9B3DA; --ghost:#2A3770; --line:#3B4A8C;
+  --peppol:#3FE0D0; --iras:#FF5A60; --doc:#FFC23D; --done:#8592D6; --ok:#57E39B; --ct:#C3A6FF;
+  --display:"Archivo","Arial Black",Arial,sans-serif;
+  --body:"IBM Plex Sans",-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{background:var(--bg)}
+body{color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.5;margin:0}
+.wrap{max-width:1240px;margin:0 auto;padding-block:18px 28px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:grid;gap:14px}
+.top{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:end;gap:16px}
+h1{font-family:var(--display);font-weight:800;font-size:clamp(24px,2.8vw,34px);line-height:1.05;margin:0;letter-spacing:-.01em;text-wrap:balance}
+h1 span{color:var(--ct)}
+.lede{color:var(--muted);margin:8px 0 0;max-width:62ch;font-size:15px}
+.flows{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:flex-end}
+.grp{display:grid;gap:6px}
+.gl{font:600 11px var(--mono);letter-spacing:.16em;color:var(--muted);padding-left:8px}
+.gl.p{color:var(--peppol)} .gl.i{color:var(--iras)}
+.seg{display:flex;flex-wrap:wrap;gap:4px;padding:4px;border:1.5px solid var(--line);border-radius:14px;background:var(--stage)}
+.seg.p{border-color:rgba(63,224,208,.45)} .seg.i{border-color:rgba(255,90,96,.45)}
+.chipbtn{font:600 14px/1 var(--body);background:transparent;color:var(--muted);border:0;padding:10px 14px;border-radius:10px;cursor:pointer;display:inline-flex;gap:8px;align-items:center}
+.chipbtn .k{font:600 12px var(--mono);color:var(--doc)}
+.chipbtn[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.chipbtn[aria-pressed="true"] .k{color:#7A5200}
+.chipbtn:hover{background:var(--ghost);color:var(--ink)}
+.chipbtn[aria-pressed="true"]:hover{background:var(--ink);color:var(--bg)}
+.fs{font:600 13px var(--body);background:transparent;color:var(--muted);border:1.5px dashed var(--line);padding:9px 14px;border-radius:999px;cursor:pointer}
+button:focus-visible{outline:3px solid var(--doc);outline-offset:3px}
+
+.stage{background:var(--stage);border-radius:20px;padding:12px 16px 16px;border:1px solid var(--ghost)}
+.scroll{overflow-x:auto}
+svg{display:block;width:100%;min-width:700px;height:auto;max-height:calc(100svh - 480px);min-height:340px}
+@media (max-height:860px){.lede{display:none} svg{max-height:calc(100svh - 425px)}}
+.route{display:flex;gap:10px;align-items:center;justify-content:center;font:600 13px var(--mono);letter-spacing:.14em;color:var(--muted);margin:2px 0 6px;min-height:28px}
+.route b{font-weight:600;padding:5px 12px;border-radius:999px;border:1.5px solid}
+.route .rp{color:var(--peppol);border-color:var(--peppol)}
+.route .ri{color:var(--iras);border-color:var(--iras)}
+.route .rn{color:var(--ct);border-color:var(--ct)}
+.zone-peppol{fill:var(--peppol);fill-opacity:.07;stroke:var(--peppol);stroke-opacity:.45;stroke-width:1.5;stroke-dasharray:2 6}
+.zone-lbl{font:600 13px var(--mono);letter-spacing:.16em}
+.zl-peppol{fill:var(--peppol)} .zl-iras{fill:var(--iras)}
+.boundary{stroke:var(--iras);stroke-opacity:.6;stroke-width:1.5;stroke-dasharray:7 7}
+.ctbox{fill:var(--ct);fill-opacity:.06;stroke:var(--ct);stroke-width:2;stroke-dasharray:10 6;transition:opacity .4s}
+.ctlbl{font:800 13px var(--display);letter-spacing:.2em;fill:var(--ct);transition:opacity .4s}
+.ctoff{opacity:0}
+.node rect.box{fill:var(--card);stroke:var(--ghost);stroke-width:2;transition:stroke .3s}
+.node text{text-anchor:middle}
+.node .eb{font:600 13px var(--mono);letter-spacing:.12em;fill:var(--muted)}
+.node .nm{font:600 18px var(--body);fill:var(--ink)}
+.node{opacity:.3;transition:opacity .4s}
+.node.lit{opacity:1}
+.node.hide{display:none}
+.node.lit rect.box{stroke:var(--line)}
+.node.ct.lit rect.box{stroke:var(--ct)}
+.node.now rect.box{stroke:var(--doc);stroke-width:3}
+.node.c5.lit rect.box{stroke:var(--iras)}
+.node.c5.now rect.box{stroke:var(--doc)}
+#pulse{fill:none;stroke:var(--doc);stroke-width:2;opacity:0}
+#pulse.on{animation:pulse 1.4s ease-out infinite}
+@keyframes pulse{0%{opacity:.9;transform:scale(1)}100%{opacity:0;transform:scale(1.12)}}
+#badge{font:600 13px var(--mono);fill:var(--ok);letter-spacing:.08em;opacity:0;transition:opacity .3s;paint-order:stroke;stroke:var(--stage);stroke-width:6px}
+#badge.on{opacity:1}
+.edge path{fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;opacity:0}
+.edge.seen path{opacity:1;stroke:var(--done);stroke-opacity:.7}
+.edge.p.seen path{stroke:var(--peppol);stroke-opacity:.6}
+.edge.i.seen path{stroke:var(--iras);stroke-opacity:.6}
+.edge.now path{opacity:1;stroke:var(--doc);stroke-width:3.5;stroke-opacity:1}
+.edge.blk path{opacity:1;stroke:var(--iras);stroke-dasharray:6 8;stroke-opacity:1}
+.mk{fill:var(--done)} .mk-now{fill:var(--doc)} .mk-blk{fill:var(--iras)} .mk-p{fill:var(--peppol)} .mk-i{fill:var(--iras)}
+.cross{font:800 30px var(--display);fill:var(--iras);opacity:0;transition:opacity .3s}
+.cross.on{opacity:1}
+#packet{opacity:0;transition:opacity .2s}
+#packet.on{opacity:1}
+#packet rect{fill:var(--doc)}
+#packet text{font:600 13px var(--mono);fill:#2A1C00;letter-spacing:.06em}
+
+.prog{display:flex;gap:6px}
+.prog i{flex:1;height:6px;border-radius:3px;background:var(--ghost);transition:background .3s}
+.prog i.on{background:var(--doc)}
+.card{background:var(--card);border-radius:20px;padding:22px 24px;display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:22px;align-items:center;border:1px solid var(--ghost)}
+@media (max-width:780px){.card{grid-template-columns:minmax(0,1fr)}}
+.num{font:800 52px/1 var(--display);color:var(--doc);font-variant-numeric:tabular-nums;letter-spacing:-.02em;white-space:nowrap}
+.num small{font:600 16px var(--mono);color:var(--muted);letter-spacing:0}
+.sh{font:800 clamp(20px,2.3vw,26px)/1.15 var(--display);margin:0 0 6px;text-wrap:balance}
+.st{margin:0;font-size:clamp(15px,1.5vw,17px);max-width:72ch}
+.tags{margin-top:10px;display:flex;gap:6px;flex-wrap:wrap}
+.tags:empty{display:none}
+.tag{font:600 11px var(--mono);letter-spacing:.08em;padding:3px 9px;border-radius:999px;border:1.5px solid}
+.t-inf{color:var(--doc);border-color:var(--doc)}
+.nav{display:flex;gap:10px;align-items:center}
+.btn{font:600 15px var(--body);border-radius:12px;padding:13px 18px;cursor:pointer;border:1.5px solid var(--line);background:transparent;color:var(--ink)}
+.btn:disabled{opacity:.35;cursor:default}
+.btn.next{background:var(--doc);border-color:var(--doc);color:#2A1C00;padding:15px 26px;font-size:16px}
+.btn.next:hover:not(:disabled){filter:brightness(1.08)}
+.take{border:1.5px dashed var(--line);border-radius:20px;padding:18px 22px;display:grid;gap:8px}
+.take[hidden]{display:none}
+.take h2{font:800 13px var(--display);letter-spacing:.14em;text-transform:uppercase;color:var(--doc);margin:0}
+.take p{margin:0;max-width:95ch;font-size:16px}
+.foot{display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px;font:500 12px var(--mono);color:var(--muted)}
+.legend{display:flex;flex-wrap:wrap;gap:16px}
+.legend span{display:inline-flex;align-items:center;gap:7px}
+.sw{width:22px;height:0;border-top:3px solid}
+.sw.p{border-color:var(--peppol)} .sw.i{border-color:var(--iras)} .sw.now{border-color:var(--doc)} .sw.n{border-color:var(--done)} .sw.c{border-top:3px dashed var(--ct)}
+.keys{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.main,.side{display:grid;gap:14px;min-width:0}
+@media (min-width:1100px){
+  .wrap{max-width:1560px}
+  .main{grid-template-columns:minmax(0,1fr) 360px;align-items:start}
+  .card{grid-template-columns:minmax(0,1fr);gap:14px;padding:22px}
+  .side .st{font-size:17px}
+  .take p{font-size:15px}
+  svg{max-height:calc(100svh - 350px)}
+}
+@media (min-width:1100px) and (max-height:860px){svg{max-height:calc(100svh - 280px)}}
+@media (prefers-reduced-motion:reduce){.node,.prog i,.ctbox,.ctlbl{transition:none}#pulse.on{animation:none;opacity:.8}}
+</style>
+
+<div class="wrap">
+  <div class="top">
+    <div>
+      <h1>InvoiceNow with <span>ClearTax</span> as IRSP and Access Point</h1>
+      <p class="lede">The customer's system sends data to the ClearTax platform. The platform validates and tracks it; ClearTax AP validates again and carries it over Peppol and to IRAS. Pick a flow, then press Next.</p>
+    </div>
+  </div>
+  <nav class="flows" id="chips" aria-label="Flows"></nav>
+
+  <div class="main">
+  <div class="stage">
+    <div class="route" id="route" aria-live="polite"></div>
+    <div class="scroll">
+    <svg id="net" viewBox="0 0 1100 660" role="img" aria-label="">
+      <defs>
+        <marker id="m" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path class="mk" d="M0,0 L10,5 L0,10 z"/></marker>
+        <marker id="m-now" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path class="mk-now" d="M0,0 L10,5 L0,10 z"/></marker>
+        <marker id="m-blk" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path class="mk-blk" d="M0,0 L10,5 L0,10 z"/></marker>
+        <marker id="m-p" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path class="mk-p" d="M0,0 L10,5 L0,10 z"/></marker>
+        <marker id="m-i" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path class="mk-i" d="M0,0 L10,5 L0,10 z"/></marker>
+      </defs>
+
+      <rect class="zone-peppol" x="60" y="300" width="980" height="140" rx="16"/>
+      <text class="zone-lbl zl-peppol" x="550" y="430" text-anchor="middle">PEPPOL NETWORK</text>
+      <line class="boundary" x1="60" y1="482" x2="1040" y2="482"/>
+      <text class="zone-lbl zl-iras" x="550" y="508" text-anchor="middle">OUTSIDE PEPPOL · DIRECT TO IRAS</text>
+
+      <rect class="ctbox" id="ct-s" x="100" y="165" width="240" height="262" rx="18"/>
+      <text class="ctlbl" id="ctl-s" transform="translate(86 296) rotate(-90)" text-anchor="middle">C2 · CLEARTAX</text>
+      <rect class="ctbox ctoff" id="ct-b" x="760" y="165" width="240" height="262" rx="18"/>
+      <text class="ctlbl ctoff" id="ctl-b" transform="translate(1014 296) rotate(90)" text-anchor="middle">C3 · CLEARTAX</text>
+
+      <g class="edge" id="e-serp_splat" data-z=""><path d="M190 112 V181"/></g>
+      <g class="edge" id="e-splat_serp" data-z=""><path d="M250 185 V116"/></g>
+      <g class="edge" id="e-splat_c2" data-z=""><path d="M190 257 V328"/></g>
+      <g class="edge" id="e-c2_splat" data-z=""><path d="M250 332 V261"/></g>
+      <g class="edge" id="e-c2_smp" data-z=""><path d="M318 334 L466 259"/></g>
+      <g class="edge" id="e-smp_c2" data-z=""><path d="M498 257 L324 348"/></g>
+      <g class="edge p" id="e-c2_c3" data-z="p"><path d="M320 368 H776"/></g>
+      <g class="edge p" id="e-c3_c2" data-z="p"><path d="M780 392 H324"/></g>
+      <g class="edge" id="e-c3_bplat" data-z=""><path d="M850 332 V261"/></g>
+      <g class="edge" id="e-bplat_c3" data-z=""><path d="M910 257 V328"/></g>
+      <g class="edge" id="e-bplat_berp" data-z=""><path d="M850 185 V116"/></g>
+      <g class="edge" id="e-berp_bplat" data-z=""><path d="M910 112 V181"/></g>
+      <g class="edge i" id="e-c2_c5" data-z="i"><path d="M210 404 V594 H446"/></g>
+      <g class="edge i" id="e-c5_c2" data-z="i"><path d="M450 616 H250 V408"/></g>
+      <g class="edge i" id="e-c3_c5" data-z="i"><path d="M910 404 V594 H654"/></g>
+      <g class="edge i" id="e-c5_c3" data-z="i"><path d="M650 616 H870 V408"/></g>
+      <g id="crosses"></g>
+
+      <g class="node" id="n-serp"><rect class="box" x="100" y="40" width="240" height="72" rx="14"/><text class="eb" x="220" y="66">C1 · SUPPLIER'S SYSTEM</text><text class="nm" x="220" y="94">ERP · POS · Invoicing</text></g>
+      <g class="node ct" id="n-splat"><rect class="box" x="120" y="185" width="200" height="72" rx="14"/><text class="eb" x="220" y="211">IRSP</text><text class="nm" x="220" y="239">ClearTax platform</text></g>
+      <g class="node" id="n-smp"><rect class="box" x="450" y="185" width="200" height="72" rx="14"/><text class="eb" x="550" y="211">SMP</text><text class="nm" x="550" y="239">Peppol directory</text></g>
+      <g class="node ct" id="n-c2"><rect class="box" x="120" y="332" width="200" height="72" rx="14"/><text class="eb" x="220" y="358">ACCESS POINT</text><text class="nm" x="220" y="386">ClearTax AP</text></g>
+      <g class="node" id="n-berp"><rect class="box" x="760" y="40" width="240" height="72" rx="14"/><text class="eb" x="880" y="66">C4 · BUYER'S SYSTEM</text><text class="nm" x="880" y="94">ERP · Invoicing</text></g>
+      <g class="node" id="n-bplat"><rect class="box" x="780" y="185" width="200" height="72" rx="14"/><text class="eb" x="880" y="211" id="bplat-eb"></text><text class="nm" x="880" y="239" id="bplat-nm"></text></g>
+      <g class="node" id="n-c3"><rect class="box" x="780" y="332" width="200" height="72" rx="14"/><text class="eb" x="880" y="358" id="c3-eb"></text><text class="nm" x="880" y="386" id="c3-nm"></text></g>
+      <g class="node c5" id="n-c5"><rect class="box" x="450" y="560" width="200" height="72" rx="14"/><text class="eb" x="550" y="586">C5</text><text class="nm" x="550" y="614">IRAS</text></g>
+
+      <rect id="pulse" x="0" y="0" width="200" height="72" rx="14"/>
+      <text id="badge" x="700" y="226" text-anchor="middle">✓ ACCEPTED</text>
+      <g id="packet"><rect x="0" y="-14" width="60" height="28" rx="7"/><text x="0" y="5" text-anchor="middle"></text></g>
+    </svg>
+    </div>
+  </div>
+
+  <aside class="side">
+  <div class="prog" id="prog" aria-hidden="true"></div>
+
+  <section class="card" aria-live="polite">
+    <div class="num" id="num"></div>
+    <div>
+      <p class="sh" id="sh"></p>
+      <p class="st" id="st"></p>
+      <div class="tags" id="tags"></div>
+    </div>
+    <div class="nav">
+      <button class="btn" id="back" type="button">Back</button>
+      <button class="btn next" id="next" type="button">Next →</button>
+    </div>
+  </section>
+
+  <section class="take" id="take" hidden></section>
+  </aside>
+  </div>
+
+  <div class="foot">
+    <div class="legend" aria-hidden="true">
+      <span><i class="sw now"></i>Moving now</span>
+      <span><i class="sw p"></i>Over Peppol</span>
+      <span><i class="sw i"></i>To or from IRAS</span>
+      <span><i class="sw n"></i>Inside a business or ClearTax</span>
+      <span><i class="sw c"></i>ClearTax</span>
+    </div>
+    <span class="keys"><span>→ or Space: next · ←: back · R: restart</span><button class="fs" type="button" id="fs">Full screen</button></span>
+  </div>
+</div>
+
+<script>
+const INF=p=>({c:"t-inf",l:"INFERRED "+p});
+const ENDS={serp_splat:["serp","splat"],splat_serp:["splat","serp"],splat_c2:["splat","c2"],c2_splat:["c2","splat"],c2_smp:["c2","smp"],smp_c2:["smp","c2"],c2_c3:["c2","c3"],c3_c2:["c3","c2"],c3_bplat:["c3","bplat"],bplat_c3:["bplat","c3"],bplat_berp:["bplat","berp"],berp_bplat:["berp","bplat"],c2_c5:["c2","c5"],c5_c2:["c5","c2"],c3_c5:["c3","c5"],c5_c3:["c5","c3"]};
+const BOX={serp:[100,40,240],splat:[120,185,200],smp:[450,185,200],c2:[120,332,200],berp:[760,40,240],bplat:[780,185,200],c3:[780,332,200],c5:[450,560,200]};
+const BUYER_GENERIC={bplat:["C4 · BUYER","Buyer's system"],c3:["C3 · ACCESS POINT","Buyer's AP"],ct:false};
+const BUYER_CT={bplat:["IRSP","ClearTax platform"],c3:["ACCESS POINT","ClearTax AP"],ct:true};
+
+const SCEN=[
+ {id:"roles",g:0,key:"WHO",name:"Who is who",buyer:BUYER_GENERIC,
+  steps:[
+   {n:"serp",h:"C1: the supplier's own system",t:"The GST-registered business owns the obligation. Its ERP, POS or other invoicing system holds the transactions."},
+   {n:"splat",h:"ClearTax platform",t:"Takes in the customer's data, validates it, prepares it for sending, and tracks the status of every document."},
+   {n:"c2",h:"ClearTax AP",t:"Validates again, exchanges invoices over Peppol, and is the only party that can send data to IRAS."},
+   {n:"c5",h:"IRAS sits outside Peppol",t:"Only accredited Access Points can send data to it."},
+  ],
+  take:`<p>ClearTax runs both parts of C2, and both validate. The platform acts for the business; the Access Point connects to Peppol and IRAS.</p>`},
+ {id:"1a",g:1,key:"1A",name:"Seller sends & reports",buyer:BUYER_GENERIC,
+  steps:[
+   {e:"serp_splat",tok:"DATA",h:"The supplier's system sends invoice data",t:"To the ClearTax platform, by Excel upload, API or SFTP."},
+   {n:"splat",h:"First validation, in the platform",t:"The platform checks the data, builds the e-invoice and stores it."},
+   {e:"splat_c2",tok:"INVOICE",h:"Handed to ClearTax AP",t:"With an instruction: deliver to the buyer, and copy to IRAS."},
+   {n:"c2",h:"Second validation, in the AP",t:"The AP checks the invoice again before it leaves."},
+   {e:"c2_smp",tok:"LOOKUP",h:"We look up the buyer",t:"The AP asks Singapore's central Peppol directory where the buyer receives invoices."},
+   {e:"smp_c2",tok:"ADDRESS",h:"The directory answers",t:"It names the buyer's Access Point."},
+   {e:"c2_c3",tok:"INVOICE",h:"Delivered over Peppol",t:"The invoice goes to the buyer's Access Point."},
+   {e:"c3_c2",tok:"RECEIPT",h:"Delivery confirmed",t:"A receipt comes back. The one-hour clock for the IRAS copy starts now."},
+   {e:"c3_bplat",tok:"INVOICE",h:"The buyer receives it",t:"The buyer's Access Point passes it to the buyer's system."},
+   {e:"c2_c5",tok:"1A COPY",h:"An exact copy goes to IRAS",t:"The same file, unchanged, within the hour."},
+   {e:"c5_c2",tok:"ACK",h:"IRAS acknowledges",t:"IRAS confirms it has received the copy."},
+   {e:"c2_splat",tok:"ACK",h:"The platform records the result",t:"The document's status and reports are updated."},
+   {e:"splat_serp",tok:"STATUS",h:"The supplier's system is told",t:"By API, or shown in the platform."},
+  ],
+  take:`<p>The supplier's system only talks to the platform. The platform checks and tracks; the AP checks again, delivers, copies to IRAS and reports back.</p>`},
+ {id:"fail",g:1,key:"1A",name:"Delivery fails",buyer:BUYER_GENERIC,
+  steps:[
+   {e:"serp_splat",tok:"DATA",h:"The supplier's system sends invoice data",t:"Same start: the platform validates it."},
+   {e:"splat_c2",tok:"INVOICE",h:"Handed to ClearTax AP",t:"Validated again, ready for the buyer and IRAS."},
+   {e:"c2_smp",tok:"LOOKUP",h:"We look up the buyer",t:"The AP asks the central directory."},
+   {e:"smp_c2",tok:"ADDRESS",h:"The directory answers",t:"It names the buyer's Access Point."},
+   {e:"c2_c3",tok:"INVOICE",blk:true,h:"Delivery fails",t:"The buyer's Access Point rejects it or does not answer."},
+   {e:"c2_c5",tok:"1A COPY",blk:true,h:"Nothing goes to IRAS",t:"The copy is sent only after a successful delivery."},
+   {e:"c2_splat",tok:"FAILED",h:"The platform shows the failure",t:"The document is marked failed for both the buyer and IRAS, so the user can act on it.",s:[INF("90%")]},
+  ],
+  take:`<p>No delivery, no IRAS copy. How we retry or alert the user is ours to design.</p>`},
+ {id:"1b",g:1,key:"1B",name:"Buyer accepts & reports",buyer:BUYER_CT,
+  steps:[
+   {e:"c3_bplat",tok:"INVOICE",h:"An invoice arrives for our customer",t:"It comes over Peppol to ClearTax AP and lands in the buyer's inbox in the platform. Nothing goes to IRAS yet."},
+   {e:"bplat_berp",tok:"INVOICE",h:"Passed to the buyer's system",t:"Optional, if the buyer works in its own ERP."},
+   {n:"bplat",h:"The buyer accepts it",t:"Approved, or booked for payment, in the platform or in the buyer's own system."},
+   {e:"bplat_c3",tok:"1B",h:"The platform builds the buyer's record",t:"A new record, from the buyer's side. The received invoice is not forwarded."},
+   {e:"c3_c5",tok:"1B",h:"Second validation, then IRAS",t:"ClearTax AP checks it again and sends it to IRAS."},
+   {e:"c5_c3",tok:"ACK",h:"IRAS acknowledges",t:"IRAS confirms receipt."},
+   {e:"c3_bplat",tok:"ACK",h:"The platform records the result",t:"Status and reports updated for the buyer."},
+  ],
+  take:`<p>Acceptance is the trigger. When the buyer uses our platform, the record can go to IRAS as soon as the invoice is accepted.</p>`},
+ {id:"2a",g:2,key:"2A · 2B",name:"Seller reports",buyer:BUYER_GENERIC,
+  steps:[
+   {e:"serp_splat",tok:"DATA",h:"The supplier's system sends sales data",t:"Sales not sent over Peppol: paper or PDF invoices, consumer sales, or daily POS totals."},
+   {n:"splat",h:"First validation, in the platform",t:"The platform checks the data and prepares it for IRAS, one invoice at a time (2A) or as a total (2B)."},
+   {e:"splat_c2",tok:"2A / 2B",h:"Handed to ClearTax AP",t:"For IRAS only."},
+   {e:"c2_c5",tok:"2A / 2B",h:"Second validation, then IRAS",t:"The AP checks it again and sends it to IRAS."},
+   {e:"c5_c2",tok:"ACK",h:"IRAS acknowledges",t:"IRAS confirms receipt."},
+   {e:"c2_splat",tok:"ACK",h:"The platform records the result",t:"Status and reports updated."},
+   {e:"splat_serp",tok:"STATUS",h:"The supplier's system is told",t:"By API, or shown in the platform."},
+  ],
+  take:`<p>Nothing crosses Peppol. Due by the GST return's filing date or due date, whichever is earlier.</p>`},
+ {id:"3a",g:2,key:"3A · 3B",name:"Buyer reports",buyer:BUYER_CT,
+  steps:[
+   {e:"berp_bplat",tok:"DATA",h:"The buyer's system sends purchase data",t:"Accepted purchases not received over Peppol: paper or PDF invoices (3A), or petty cash totals (3B)."},
+   {n:"bplat",h:"First validation, in the platform",t:"The platform checks the data and prepares it for IRAS."},
+   {e:"bplat_c3",tok:"3A / 3B",h:"Handed to ClearTax AP",t:"For IRAS only."},
+   {e:"c3_c5",tok:"3A / 3B",h:"Second validation, then IRAS",t:"The AP checks it again and sends it to IRAS."},
+   {e:"c5_c3",tok:"ACK",h:"IRAS acknowledges",t:"IRAS confirms receipt."},
+   {e:"c3_bplat",tok:"ACK",h:"The platform records the result",t:"Status and reports updated."},
+   {e:"bplat_berp",tok:"STATUS",h:"The buyer's system is told",t:"By API, or shown in the platform."},
+  ],
+  take:`<p>Same route as 1B; only the source of the invoice differs.</p>`},
+];
+
+const $=id=>document.getElementById(id);
+const reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;
+let sc=SCEN[0], idx=0, raf=null, timer=null;
+
+const GROUPS=[["START",""],["PEPPOL INVOICES","p"],["OUTSIDE PEPPOL","i"]];
+const chip=s=>`<button class="chipbtn" type="button" data-id="${s.id}" aria-pressed="false"><span class="k">${s.key}</span>${s.name}</button>`;
+$("chips").innerHTML=GROUPS.map(([l,c],gi)=>`<div class="grp" role="group" aria-label="${l}"><span class="gl ${c}">${l}</span><div class="seg ${c}">${SCEN.filter(s=>s.g===gi).map(chip).join("")}</div></div>`).join("");
+$("chips").addEventListener("click",e=>{const b=e.target.closest(".chipbtn"); if(b) choose(b.dataset.id)});
+$("fs").addEventListener("click",()=>{
+  if(document.fullscreenElement){document.exitFullscreen&&document.exitFullscreen().catch(()=>{});return}
+  const d=document.documentElement; if(d.requestFullscreen){d.requestFullscreen().catch(()=>{$("fs").hidden=true})} else {$("fs").hidden=true}
+});
+document.addEventListener("fullscreenchange",()=>{$("fs").textContent=document.fullscreenElement?"Exit full screen":"Full screen"});
+
+function choose(id){
+  sc=SCEN.find(s=>s.id===id)||SCEN[0]; idx=0;
+  document.querySelectorAll(".chipbtn").forEach(b=>b.setAttribute("aria-pressed",b.dataset.id===sc.id));
+  const B=sc.buyer;
+  $("bplat-eb").textContent=B.bplat[0]; $("bplat-nm").textContent=B.bplat[1];
+  $("c3-eb").textContent=B.c3[0]; $("c3-nm").textContent=B.c3[1];
+  ["ct-b","ctl-b"].forEach(i=>$(i).classList.toggle("ctoff",!B.ct));
+  $("n-bplat").classList.toggle("ct",B.ct); $("n-c3").classList.toggle("ct",B.ct);
+  $("n-berp").classList.toggle("hide",!B.ct);
+  const R={roles:'<b class="rn">THE ROLES</b>',"1a":'ROUTE <b class="rp">PEPPOL</b> + <b class="ri">IRAS</b>',fail:'ROUTE <b class="rp">PEPPOL</b> + <b class="ri">IRAS</b>',"2a":'ROUTE <b class="ri">IRAS ONLY</b>',"1b":'BUYER\'S RECORD <b class="ri">IRAS ONLY</b>',"3a":'ROUTE <b class="ri">IRAS ONLY</b>'};
+  $("route").innerHTML=R[sc.id]||"";
+  $("prog").innerHTML=sc.steps.map(()=>"<i></i>").join("");
+  try{history.replaceState(null,"","#"+sc.id)}catch(e){}
+  draw(true);
+}
+
+function draw(animate){
+  cancelAnimationFrame(raf); clearTimeout(timer);
+  const st=sc.steps[idx];
+  const used={};
+  sc.steps.forEach((s,i)=>{ if(s.e && i<=idx) used[s.e]={i,s}; });
+  Object.keys(ENDS).forEach(k=>{
+    const g=$("e-"+k), p=g.querySelector("path"), z=g.dataset.z;
+    p.style.transition="none"; p.style.strokeDasharray=""; p.style.strokeDashoffset="";
+    const u=used[k]; let cls="";
+    if(u) cls = u.s.blk ? "blk" : (u.i===idx ? "now" : "seen");
+    g.classList.remove("seen","now","blk"); if(cls) g.classList.add(cls);
+    const mk = cls==="now"?"m-now":cls==="blk"?"m-blk":z==="p"?"m-p":z==="i"?"m-i":"m";
+    if(cls) p.setAttribute("marker-end",`url(#${mk})`); else p.removeAttribute("marker-end");
+  });
+  const lit=new Set(), now=new Set();
+  sc.steps.forEach((s,i)=>{ if(i>idx) return; if(s.e) ENDS[s.e].forEach(n=>lit.add(n)); if(s.n) lit.add(s.n); });
+  if(st.e) ENDS[st.e].forEach(n=>now.add(n)); if(st.n) now.add(st.n);
+  Object.keys(BOX).forEach(n=>{const el=$("n-"+n); el.classList.toggle("lit",lit.has(n)); el.classList.toggle("now",now.has(n));});
+  const pu=$("pulse");
+  if(st.n){ const [x,y,w]=BOX[st.n]; pu.setAttribute("x",x); pu.setAttribute("y",y); pu.setAttribute("width",w); pu.style.transformOrigin=`${x+w/2}px ${y+36}px`; pu.classList.add("on"); } else pu.classList.remove("on");
+  const acc=sc.steps.findIndex(s=>s.n==="bplat"&&/accept/i.test(s.h));
+  $("badge").classList.toggle("on",acc>-1&&acc<=idx);
+  const crosses=$("crosses"); crosses.innerHTML="";
+  const addCross=k=>{ const pp=$("e-"+k).querySelector("path"), m=pp.getPointAtLength(pp.getTotalLength()*0.5);
+    const c=document.createElementNS("http://www.w3.org/2000/svg","text"); c.setAttribute("class","cross on"); c.setAttribute("text-anchor","middle");
+    c.setAttribute("x",m.x); c.setAttribute("y",m.y+10); c.textContent="✕"; crosses.appendChild(c); };
+  Object.keys(used).forEach(k=>{ if(used[k].s.blk && used[k].i<idx) addCross(k); });
+  $("num").innerHTML=`${String(idx+1).padStart(2,"0")}<small> / ${String(sc.steps.length).padStart(2,"0")}</small>`;
+  $("sh").textContent=st.h; $("st").textContent=st.t;
+  $("tags").innerHTML=(st.s||[]).map(x=>`<span class="tag ${x.c}">${x.l}</span>`).join("");
+  document.querySelectorAll("#prog i").forEach((b,i)=>b.classList.toggle("on",i<=idx));
+  $("back").disabled=idx===0;
+  const last=idx===sc.steps.length-1;
+  $("next").textContent=last?"Restart ↺":"Next →";
+  const tk=$("take"); tk.hidden=!last; if(last) tk.innerHTML=`<h2>Remember</h2>${sc.take}`;
+  $("net").setAttribute("aria-label",`Step ${idx+1} of ${sc.steps.length}: ${st.h}. ${st.t}`);
+  const pk=$("packet");
+  if(!st.e){ pk.classList.remove("on"); return; }
+  const path=$("e-"+st.e).querySelector("path"), L=path.getTotalLength();
+  const label=st.tok||""; pk.querySelector("text").textContent=label;
+  const w=Math.max(54,label.length*8.4+22), r=pk.querySelector("rect"); r.setAttribute("width",w); r.setAttribute("x",-w/2);
+  const place=f=>{const pt=path.getPointAtLength(L*f); pk.setAttribute("transform",`translate(${pt.x},${pt.y})`)};
+  const stop = st.blk ? 0.5 : 0.6;
+  const showCross=()=>{ if(st.blk) addCross(st.e); };
+  if(!animate||reduce){ place(stop); pk.classList.toggle("on",!st.blk); showCross(); return; }
+  path.style.strokeDasharray=L; path.style.strokeDashoffset=L; path.getBoundingClientRect();
+  path.style.transition="stroke-dashoffset .75s ease-out"; path.style.strokeDashoffset="0";
+  timer=setTimeout(()=>{ path.style.transition="none"; path.style.strokeDasharray=""; path.style.strokeDashoffset=""; },800);
+  pk.classList.add("on"); const t0=performance.now(), dur=900;
+  const tick=n=>{ const k=Math.min(1,(n-t0)/dur); const e=1-Math.pow(1-k,3); place(e*stop);
+    if(k<1) raf=requestAnimationFrame(tick); else if(st.blk){ pk.classList.remove("on"); showCross(); } };
+  raf=requestAnimationFrame(tick);
+}
+
+function next(){ idx = idx<sc.steps.length-1 ? idx+1 : 0; draw(true); }
+function back(){ if(idx>0){idx--;draw(false)} }
+$("next").onclick=next; $("back").onclick=back;
+document.addEventListener("keydown",e=>{
+  const t=e.target; if(t.closest&&t.closest("input,textarea"))return;
+  if(e.key==="ArrowRight"||(e.key===" "&&!(t.closest&&t.closest("button")))){e.preventDefault();next()}
+  else if(e.key==="ArrowLeft"){back()}
+  else if(e.key==="r"||e.key==="R"){idx=0;draw(true)}
+});
+const h=(location.hash||"").slice(1);
+choose(SCEN.some(s=>s.id===h)?h:"roles");
+</script>
+
+</body></html>
